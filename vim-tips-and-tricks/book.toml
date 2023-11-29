@@ -1,6 +1,0 @@
-[book]
-authors = ["ericbarber"]
-language = "en"
-multilingual = false
-src = "src"
-title = "vim-tips-and-tricks"
