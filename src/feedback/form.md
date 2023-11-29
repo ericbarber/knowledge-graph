@@ -13,7 +13,7 @@ We appreciate your feedback! Please fill out the form below.
     document.getElementById('feedback-form').onsubmit = async function(e) {
         e.preventDefault();
         const feedback = document.querySelector('[name="feedback"]').value;
-        const response = await fetch('http://0.0.0.0:8080/feedback', {
+        const response = await fetch('http://127.0.0.1:8080/feedback', {
             method: 'POST',
             body: feedback
         });
