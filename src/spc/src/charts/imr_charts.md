@@ -1,6 +1,6 @@
 # I-MR Chart: Individuals and Moving Range Chart
 
-## Implementing I-MR Chart Analysis in Rust
+## Implementing I-MR Chart Analysis  
 
 In this chapter, we explore the implementation of an I-MR (Individuals and Moving Range) Chart using Rust and PySoark. The I-MR chart is a tool used in statistical process control for monitoring process behavior over time, where the I-Chart tracks individual measurements and the MR-Chart tracks the moving range between measurements.
 ## Generating a Dataset for I-MR Chart Analysis
