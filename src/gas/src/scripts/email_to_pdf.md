@@ -157,9 +157,6 @@ function formatString(str, ...args) {
   });
 }
 
-// Example usage in your script
-const subjectToday = formatString(EMAIL_SUBJECT_PREFIX, formattedCurrentDate);
-
 /**
  * Sends a notification email to a specified recipient.
  * @param {string} recipient - The email address of the recipient.
