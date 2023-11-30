@@ -1,4 +1,4 @@
-# Copy Email as PD F
+# Copy Email as PDF
 
 To create a Google Apps Script that searches for emails with a specific subject, converts them to PDF, and saves them in a specific Google Drive folder structure based on the current year and month, you can follow these steps. This script will be designed to be reusable and maintainable, with constants extracted to the top.
 
@@ -12,7 +12,7 @@ Here's a script that accomplishes the following requirements:
 const EMAIL_SUBJECT = "Meta data needed"; // Subject to search in emails
 const PARENT_FOLDER_ID = "your_parent_folder_id_here"; // Replace with your actual parent folder ID
 
-const EMAIL_SUBJECT_PREFIX = "Datastore Inventory Report"; // Base subject to search in emails
+const EMAIL_SUBJECT_PREFIX = "Datastore Inventory Report ({0}) Temp"; // Base subject to search in emails
 
 /**
  * Main function to be executed by the trigger.
@@ -26,8 +26,8 @@ function saveEmailsAsPDFAndNotify() {
     const formattedCurrentDate = Utilities.formatDate(currentDate, Session.getScriptTimeZone(), "MM/dd/yy");
     const formattedPreviousDate = Utilities.formatDate(previousDate, Session.getScriptTimeZone(), "MM/dd/yy");
 
-    const subjectToday = EMAIL_SUBJECT_PREFIX + " (" + formattedCurrentDate + ")";
-    const subjectYesterday = EMAIL_SUBJECT_PREFIX + " (" + formattedPreviousDate + ")";
+    const subjectToday =  formatString(EMAIL_SUBJECT_PREFIX, formattedCurrentDate);
+    const subjectYesterday =  formatString(EMAIL_SUBJECT_PREFIX, formattedPreviousDate);
 
     const emailsToday = GmailApp.search('subject:' + subjectToday);
     const emailsYesterday = GmailApp.search('subject:' + subjectYesterday);
@@ -132,6 +132,33 @@ function getOrCreateFolder(parentFolderId, folderName) {
     return parentFolder.createFolder(folderName);
   }
 }
+
+/**
+ * Formats a string by replacing placeholders with provided arguments.
+ * This function mimics a simplified version of the string formatting found in some other languages.
+ * Placeholders in the string are indicated by {index}, where 'index' is the position of the argument to substitute.
+ * 
+ * Example usage:
+ *   formatString("Hello {0}, your balance is {1}", "Alice", "$100")
+ *   // returns "Hello Alice, your balance is $100"
+ *
+ * @param {string} str - The base string containing placeholders.
+ * @param {...any} args - A list of arguments to replace placeholders.
+ * @return {string} The formatted string with placeholders replaced by provided arguments.
+ */
+function formatString(str, ...args) {
+  return str.replace(/{(\d+)}/g, function(match, number) { 
+    // The replace function searches for pattern {number} in 'str'
+    // 'number' is captured from the pattern and used to access the corresponding element in 'args'
+    // If the element exists, it replaces the pattern; otherwise, the pattern remains unchanged
+    return typeof args[number] != 'undefined'
+      ? args[number] 
+      : match;
+  });
+}
+
+// Example usage in your script
+const subjectToday = formatString(EMAIL_SUBJECT_PREFIX, formattedCurrentDate);
 
 /**
  * Sends a notification email to a specified recipient.
