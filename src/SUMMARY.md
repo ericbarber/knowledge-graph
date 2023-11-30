@@ -33,3 +33,7 @@
 
 ## Providing Feedback
 - [Provide Feedback](./feedback/form.md)
+
+# Part V: Google Apps Scripts
+- [Google Apps Scripts](./gas/READMD.md)
+- [Copy Email as PDF](./gas/src/scripts/email_to_pdf.md)
