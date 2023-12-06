@@ -52,8 +52,8 @@ function saveEmailToPDF(email) {
   const emails = GmailApp.search('subject:' + EMAIL_SUBJECT);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
-  const folderName = 'Weekly Emails';
+  const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Ensures two-digit month format
+  const folderName = `${currentMonth}.Weekly Emails`;
 
   // Get or create the necessary folders
   const yearFolder = getOrCreateFolder(PARENT_FOLDER_ID, currentYear.toString());
@@ -83,8 +83,8 @@ function saveEmailToPDF(email) {
 function isEmailSaved(email) {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
-  const folderName = 'Weekly Emails';
+  const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Ensures two-digit month format
+  const folderName = `${currentMonth}.Weekly Emails`;
 
   // Get the necessary folders
   const yearFolder = getOrCreateFolder(PARENT_FOLDER_ID, currentYear.toString());

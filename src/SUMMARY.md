@@ -1,6 +1,6 @@
 # Summary
 
-# Part I: Community and Tools
+# Part : Community and Tools
 
 ## Data Engineer Community of Practice
 - [Community of Practice](./cop/README.md)
@@ -8,13 +8,21 @@
 ## BI Tools for Jira Projects
 - [Entity Relationship of Common Jira Object](./jira/src/erd.md)
 
-# Part II: Text Editing Techniques
+# Part : Text Editing Techniques
 
 ## Text Edits
 - [Text Edits](./text_edits/README.md)
 - [Multi Line Edit](./text_edits/src/multi_line_edits.md)
 
-# Part III: Statistical Process Control
+# Part : Online Analytical Processing (OLAP)
+- [OLAP](./olap/README.md)
+
+# Part : Process Analysis
+
+## Introduciton to Process Analysis
+- [Cycle Time](./process_analysis/src/cycle_time.md)
+
+# Part : Statistical Process Control
 
 ## Introduction to SPC
 - [Statistical Process Control](./spc/README.md)
@@ -29,11 +37,15 @@
 - [P Chart: Proportions Chart - Defectives](./spc/src/charts/p_chart_defectives.md)
 - [I-MR Chart: Individuals and Moving Range Chart](./spc/src/charts/imr_charts.md)
 
-# Part IV: Feedback
+# Part : Feedback
 
 ## Providing Feedback
 - [Provide Feedback](./feedback/form.md)
 
-# Part V: Google Apps Scripts
+# Part : Google Apps Scripts
 - [Google Apps Scripts](./gas/READMD.md)
 - [Copy Email as PDF](./gas/src/scripts/email_to_pdf.md)
+
+
+# Part : Google Apps Scripts
+- [Spark Code of SPC](./spc/src/spark.md)
