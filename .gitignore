@@ -1,2 +1,4 @@
 book
 feedback_server
+.env
+config.*

@@ -34,7 +34,8 @@ We appreciate your feedback! Please fill out the form below.
         // Race the fetch against the timeout
         try {
             const response = await Promise.race([
-                fetch('http://127.0.0.1:8080/feedback', {
+                // fetch('http://127.0.0.1:8080/feedback', {
+                fetch('http://192.168.0.55:8080/feedback', {
                     method: 'POST',
                     body: feedback
                 }),
