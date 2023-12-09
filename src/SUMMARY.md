@@ -1,14 +1,17 @@
 # Summary
 
-# Part : Community and Tools
+# Part : Environment Set Up - Synapse 
+## Oh-My-Zshell
+- [Oh My Z-Shell](./synapse/src/zshell/src/setup.md)
 
-## Data Engineer Community of Practice
-- [Community of Practice](./cop/README.md)
+## SSH Key Gen
+- [SSH Key](./synapse/src/ssh_key_gen/setup.md)
 
-## BI Tools for Jira Projects
-- [Entity Relationship of Common Jira Object](./jira/src/erd.md)
+## Secret Management
+- [Pass](./synapse/src/pass/src/setup.md)
 
-# Part : Text Editing Techniques
+## NeoVim/NvChad/Vim
+- [NvChad](./synapse/src/Vim/src/setup.md)
 
 ## Text Edits
 - [Text Edits](./text_edits/README.md)
@@ -16,6 +19,14 @@
 
 # Part : Online Analytical Processing (OLAP)
 - [OLAP](./olap/README.md)
+
+# Part : Community and Tools
+
+## Data Engineer Community of Practice
+- [Community of Practice](./cop/README.md)
+
+## BI Tools for Jira Projects
+- [Entity Relationship of Common Jira Object](./jira/src/erd.md)
 
 # Part : Process Analysis
 

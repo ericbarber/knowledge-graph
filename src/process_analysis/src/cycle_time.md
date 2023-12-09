@@ -19,7 +19,6 @@ Let's consider an OLAP application that supports the following processes:
 To visualize the process, we can create a flowchart. Markdown doesn't natively support complex diagrams, but we can describe a simple flowchart structure using a combination of text and basic ASCII art. For more complex diagrams, it's recommended to use specialized tools and then embed images in the Markdown file.
 
 ```markdown
-
 Application Submission
          |
          v
@@ -49,14 +48,27 @@ Decision Step
 #### Example Scenario
 
 Imagine an OLAP application used for processing job applications. Here's a hypothetical cycle time analysis:
-
-    Application Submission: 2 hours (time taken by applicants to fill and submit applications)
-    Wait Time: 12 hours (time before the application review starts)
-    Application Review: 3 days (time taken by HR to review the application)
-    Wait Time: 1 day (time before the applicant is contacted for an appointment)
-    Applicant Appointment: 2 days (time to schedule and conduct the appointment)
-    Wait Time: 2 days (time taken to make a decision post-appointment)
-    Decision Step: 4 hours (time to finalize and communicate the decision)
+```   
+Application Submission: 2 hours (time taken by applicants to fill and submit applications)
+                             |
+                             v
+Wait Time: 12 hours (time before the application review starts)
+                             |
+                             v
+Application Review: 3 days (time taken by HR to review the application)
+                             |
+                             v
+Wait Time: 1 day (time before the applicant is contacted for an appointment)
+                             |
+                             v
+Applicant Appointment: 2 days (time to schedule and conduct the appointment)
+                             |
+                             v
+Wait Time: 2 days (time taken to make a decision post-appointment)
+                             |
+                             v
+Decision Step: 4 hours (time to finalize and communicate the decision)
+```
 
 
 Total Cycle Time = 2 hours + 12 hours + 3 days + 1 day + 2 days + 2 days + 4 hours
