@@ -7,13 +7,12 @@ First, ensure you have the necessary permissions to access Gmail and Google Driv
 Here's a script that accomplishes the following requirements:
 
 ```javascript
-
 // Constants
 const EMAIL_SUBJECT = "Meta data needed"; // Subject to search in emails
 const PARENT_FOLDER_ID = "your_parent_folder_id_here"; // Replace with your actual parent folder ID
 
-const EMAIL_SUBJECT_PREFIX = "Datastore Inventory Report ({0}) Temp"; // Base subject to search in emails
-
+const EMAIL_SUBJECT_PREFIX = "Datastore Inventory Reporting ({0}) - Metadata Accuracy"
+const PROJECT_OWNER_EMAIL = "first.last@company.com"
 /**
  * Main function to be executed by the trigger.
  */
@@ -24,55 +23,41 @@ function saveEmailsAsPDFAndNotify() {
     previousDate.setDate(currentDate.getDate() - 1);
 
     const formattedCurrentDate = Utilities.formatDate(currentDate, Session.getScriptTimeZone(), "MM/dd/yy");
-    const formattedPreviousDate = Utilities.formatDate(previousDate, Session.getScriptTimeZone(), "MM/dd/yy");
+    // const formattedPreviousDate = Utilities.formatDate(previousDate, Session.getScriptTimeZone(), "MM/dd/yy");
+    const formattedPreviousDate = "12/05/23";
 
-    const subjectToday =  formatString(EMAIL_SUBJECT_PREFIX, formattedCurrentDate);
-    const subjectYesterday =  formatString(EMAIL_SUBJECT_PREFIX, formattedPreviousDate);
+    const subjectToday = formatSubjectWithDate(EMAIL_SUBJECT_PREFIX, formattedCurrentDate);
 
-    const emailsToday = GmailApp.search('subject:' + subjectToday);
-    const emailsYesterday = GmailApp.search('subject:' + subjectYesterday);
+    const subjectYesterday = formatSubjectWithDate(EMAIL_SUBJECT_PREFIX, formattedPreviousDate);
 
-    const allEmails = emailsToday.concat(emailsYesterday).sort((a, b) => b.getDate() - a.getDate());
+    const emailsToday = GmailApp.search(subjectToday);
 
-    if (allEmails.length > 0 && !isEmailSaved(allEmails[0])) {
-      saveEmailToPDF(allEmails[0]);
+    const emailsYesterday = GmailApp.search(subjectYesterday);
+
+    const allEmailThreads = emailsToday.concat(emailsYesterday).sort((a, b) => b.getDate() - a.getDate());
+    Logger.log('Number of emails found: %s', allEmailThreads.length)
+
+    if (allEmailThreads.length > 0 && !isEmailSaved(allEmailThreads[0])) {
+      Logger.log("Saving email as PDF...")
+      saveEmailToPDF(allEmailThreads[0]);
     }
 
     sendNotification(PROJECT_OWNER_EMAIL, "Daily Email Processing Completed", "The script has successfully run and processed emails.");
   } catch (error) {
-    sendNotification(PROJECT_OWNER_EMAIL, "Error in Daily Email Processing", "An error occurred: " + error.message);
+    // sendNotification(PROJECT_OWNER_EMAIL, "Error in Daily Email Processing", "An error occurred: " + error.message);
+    Logger.log(error)
   }
 }
 
 /**
- * Saves an email as a PDF in the designated Google Drive folder.
- * @param {GmailMessage} email - The email to save.
+ * Bulds the seach parameter for GmailApp.seach.
+ * @param {emailSubjectString} email - The email subject.
+ * @param {formattedDate} date - The date to add into subject "mm/dd/yy".
+ * @return {string} subject string - The seach parameter for GmailApp.seach.
  */
-function saveEmailToPDF(email) {
-  const emails = GmailApp.search('subject:' + EMAIL_SUBJECT);
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Ensures two-digit month format
-  const folderName = `${currentMonth}.Weekly Emails`;
-
-  // Get or create the necessary folders
-  const yearFolder = getOrCreateFolder(PARENT_FOLDER_ID, currentYear.toString());
-  const monthFolder = getOrCreateFolder(yearFolder.getId(), currentMonth.toString());
-  const targetFolder = getOrCreateFolder(monthFolder.getId(), folderName);
-
-  // Process each email
-  emails.forEach(email => {
-    const emailThread = email.getThread();
-    const messages = emailThread.getMessages();
-
-  messages.forEach((message, index) => {
-      const subject = message.getSubject();
-      const safeSubject = subject.replace(/\//g, '_'); // Replace '/' with '_'
-      const pdf = convertEmailToPDF(message);
-      const pdfName = safeSubject + ' - ' + (index + 1) + '.pdf';
-      targetFolder.createFile(pdf).setName(pdfName);
-    });
-  });
+function formatSubjectWithDate(emailSubjectString, formattedDate) {
+  const result = "subject: " + formatString(emailSubjectString, formattedDate);
+  return result
 }
 
 /**
@@ -80,29 +65,69 @@ function saveEmailToPDF(email) {
  * @param {GmailMessage} email - The email to check.
  * @return {boolean} True if the email has been saved, false otherwise.
  */
-function isEmailSaved(email) {
+function isEmailSaved(emailThread) {
+  Logger.log("Checking if emailThread is already saved...")
+  const messages = emailThread.getMessages()
+
+  for (var m = 0;m < messages.length; m++) {
+    var message = messages[m];
+    Logger.log(message);
+    var subject = message.getSubject();
+    Logger.log("\tChecking files for Subject: %s", subject);
+  }
+
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
-  const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Ensures two-digit month format
-  const folderName = `${currentMonth}.Weekly Emails`;
+  const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+  const folderName = currentMonth + '.Weekly Emails';
 
   // Get the necessary folders
   const yearFolder = getOrCreateFolder(PARENT_FOLDER_ID, currentYear.toString());
-  const monthFolder = getOrCreateFolder(yearFolder.getId(), currentMonth.toString());
-  const targetFolder = getOrCreateFolder(monthFolder.getId(), folderName);
+  const targetFolder = getOrCreateFolder(yearFolder.getId(), folderName);
 
-  const subject = email.getSubject();
   const safeSubject = subject.replace(/\//g, '_'); // Replace '/' with '_'
+  Logger.log("Converting email subject \n\t from: %s \n\t to: %s", subject, safeSubject)
 
   // Check if a file with the same name exists
   const files = targetFolder.getFiles();
   while (files.hasNext()) {
     const file = files.next();
     if (file.getName().startsWith(safeSubject)) {
+      Logger.log("\tEmail already saved")
       return true; // File with the same subject already exists
     }
   }
+  Logger.log("\tNo file with the same subject found")
   return false; // No file with the same subject found
+
+}
+
+/**
+ * Saves an email as a PDF in the designated Google Drive folder.
+ * @param {GmailMessage} email - The email to save.
+ */
+function saveEmailToPDF(emailThread) {
+
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+  const folderName = currentMonth + '.Weekly Emails';
+
+  // Get or create the necessary folders
+  const yearFolder = getOrCreateFolder(PARENT_FOLDER_ID, currentYear.toString());
+  const targetFolder = getOrCreateFolder(yearFolder.getId(), folderName);
+
+  // Process each email
+  const messages = emailThread.getMessages()
+  for (var m = 0;m < messages.length; m++) {
+    const message = messages[m];
+
+    const subject = message.getSubject();
+    const safeSubject = subject.replace(/\//g, '_'); // Replace '/' with '_'
+    const pdf = convertEmailToPDF(message);
+    const pdfName = safeSubject + '.pdf';
+    targetFolder.createFile(pdf).setName(pdfName);
+  };
 }
 
 /**
@@ -111,8 +136,23 @@ function isEmailSaved(email) {
  * @return {Blob} The PDF blob.
  */
 function convertEmailToPDF(message) {
+  const _from = message.getFrom();
+  const to = message.getTo();
+  const toCc = message.getCc();
+  const date = message.getDate();
+  const subject = message.getSubject();
   const body = message.getBody();
-  const blob = Utilities.newBlob(body, 'text/html', 'email.html');
+
+  var htmlContent = `
+  <p><strong>From:</strong>  ${_from}</p>
+  <p><strong>To:</strong>  ${to}</p>
+  <p><strong>CC:</strong>  ${toCc}</p>
+  <p><strong>Date:</strong>  ${date}</p>
+  <p><strong>Subject:</strong>  ${subject}</p>
+  ${body}
+  `
+
+  const blob = Utilities.newBlob(htmlContent, 'text/html', 'email.html');
   return blob.getAs('application/pdf');
 }
 
@@ -137,7 +177,7 @@ function getOrCreateFolder(parentFolderId, folderName) {
  * Formats a string by replacing placeholders with provided arguments.
  * This function mimics a simplified version of the string formatting found in some other languages.
  * Placeholders in the string are indicated by {index}, where 'index' is the position of the argument to substitute.
- * 
+ *
  * Example usage:
  *   formatString("Hello {0}, your balance is {1}", "Alice", "$100")
  *   // returns "Hello Alice, your balance is $100"
@@ -147,12 +187,12 @@ function getOrCreateFolder(parentFolderId, folderName) {
  * @return {string} The formatted string with placeholders replaced by provided arguments.
  */
 function formatString(str, ...args) {
-  return str.replace(/{(\d+)}/g, function(match, number) { 
+  return str.replace(/{(\d+)}/g, function(match, number) {
     // The replace function searches for pattern {number} in 'str'
     // 'number' is captured from the pattern and used to access the corresponding element in 'args'
     // If the element exists, it replaces the pattern; otherwise, the pattern remains unchanged
     return typeof args[number] != 'undefined'
-      ? args[number] 
+      ? args[number]
       : match;
   });
 }
@@ -179,11 +219,13 @@ function setUpTrigger() {
     .create();
 }
 
+
 ```
 How to Use This Script
 
-    Replace 'your_parent_folder_id_here' with the actual ID of your parent folder in Google Drive.
+    Replace constants with the information specific to your Google account.
     Run the saveEmailsAsPDF function to execute the script.
+    
 
 What This Script Does
 
