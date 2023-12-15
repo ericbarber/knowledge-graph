@@ -27,6 +27,7 @@
 
 ## BI Tools for Jira Projects
 - [Entity Relationship of Common Jira Object](./jira/src/erd.md)
+- [Python Script for Common Jira Object](./jira/src/jira_init.md)
 
 # Part : Process Analysis
 
